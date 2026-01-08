@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bi207_simulation"
+version = "0.0.0"
+license = { file = "LICENSE" }
+description = "Bismuth 207 decay simulator for liquid argon time projection chambers."
+maintainers = [
+	{ name = "A. Oranday", email = "alejandro@oran.day" },
+]
+requires-python = ">=3.12"
+dependencies = [
+	"numpy>=2.0.0",
+]
+
+[tool.black]
+line-length = 120
+target-version = [ "py311" ]
+
+[tool.isort]
+profile = "black"
+line_length = 120
+src_paths = [ "src" ]
+
+[tool.flake8]
+max-line-length = 120
+extend-ignore = [ "E203", "W503" ]
+select = [ "E", "F", "W", "B" ]
+exclude = [ ".git", "__pycache__", "build", "dist", ".venv" ]
+
+[tool.mypy]
+python_version = "3.12"
+disallow_untyped_defs = true
+check_untyped_defs = true
+ignore_missing_imports = true
+no_implicit_optional = true
