@@ -1,0 +1,97 @@
+num_events = 25_000
+
+[detector]
+num_channels = 2
+channel_start_pos = 7.5
+channel_widths = [7.5, 7.5]
+channel_spacing = 15
+channel_increment_dir = "r"
+threshold = 0.26
+drift_velocity = 1.5
+electron_lifetime_ms = 3
+channel_resolution_mev = 0.08
+signal_width = 12
+
+[detector.geometry]
+type = "cylinder"
+radius = 30
+height = 205
+origin = [0, 0, 0]
+
+[source_A]
+decay_rate = 3000
+
+[source_A.geometry]
+type = "cylinder"
+radius = 2.5
+height = 0
+origin = [0, 0, 0]
+
+[[source_A.decay_branches]]
+probability = 0.0015
+emission.type = "electron"
+emission.energy_mev = 0.482
+
+[[source_A.decay_branches]]
+probability = 0.0044
+emission.type = "electron"
+emission.energy_mev = 0.556
+
+[[source_A.decay_branches]]
+probability = 0.0152
+emission.type = "electron"
+emission.energy_mev = 0.566
+
+[[source_A.decay_branches]]
+probability = 0.9789#0.9776
+emission.type = "photon"
+emission.energy_mev = 0.570
+emission.interaction_dist = 80
+
+[source_B]
+decay_rate = 3000
+
+[source_B.geometry]
+type = "cylinder"
+radius = 2.5
+height = 0
+origin = [0, 0, 0]
+
+[[source_B.decay_branches]]
+probability = 0.0054
+emission.type = "electron"
+emission.energy_mev = 1.060
+
+[[source_B.decay_branches]]
+probability = 0.0184
+emission.type = "electron"
+emission.energy_mev = 1.049
+
+[[source_B.decay_branches]]
+probability = 0.0703
+emission.type = "electron"
+emission.energy_mev = 0.976
+
+[[source_B.decay_branches]]
+probability = 0.7458
+emission.type = "photon"
+emission.energy_mev = 1.064
+emission.interaction_dist = 120
+
+[[source_B.decay_branches]]
+probability = 0.0687
+emission.type = "photon"
+emission.energy_mev = 1.770
+emission.interaction_dist = 160
+
+[[source_B.decay_branches]]
+probability = 0.0002
+emission.type = "electron"
+emission.energy_mev = 1.682
+
+[[source_B.decay_branches]]
+probability = 0.0912
+emission.type = "photon"
+emission.energy_mev = 1.440
+emission.interaction_dist = 140
+

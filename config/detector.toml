@@ -1,0 +1,17 @@
+[detector]
+num_channels = 2
+channel_widths = [1]
+channel_spacing = 1
+channel_increment_dir = "r"
+threshold = 0.26
+drift_velocity = 1.6
+electron_lifetime_ms = 3
+channel_resolution_mev = 0.08
+signal_width = 12
+
+[detector.geometry]
+type = "cylinder"
+radius = 2
+height = 2
+origin = [0, 0, 0]
+

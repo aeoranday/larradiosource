@@ -1,0 +1,19 @@
+[source]
+decay_rate = 3000
+
+[source.geometry]
+type = "cylinder"
+radius = 2
+height = 0
+origin = [0, 0, 0]
+
+[[source.decay_branches]]
+probability = 0.1
+emission.type = "electron"
+emission.energy_mev = 1.2
+
+[[source.decay_branches]]
+probability = 0.9
+emission.type = "photon"
+emission.energy_mev = 2.4
+attenuation_dist = 240
