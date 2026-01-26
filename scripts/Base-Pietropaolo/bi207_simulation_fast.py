@@ -2,11 +2,8 @@ import math
 import random
 import numpy as np
 
+from collections import defaultdict
 
-TOTAL_EMISSIONS: int = 0
-TOTAL_ELECTRON_EMISSIONS: int = 0
-
-TOTAL_OUTSIDE_EMISSIONS: int = 0
 
 # -------------------------------------------------
 # Local bindings (major speedup)
@@ -108,8 +105,6 @@ def simulate_hit(Dinter, Energy, isele, drmax, ilosh):
 #        if r1 > 1000:
 #            print(z1, r1)
 #            input()
-        global TOTAL_OUTSIDE_EMISSIONS
-        TOTAL_OUTSIDE_EMISSIONS += 1
         return 0, 0, 0, 0, 0
 
     Ee = Energy if isele else compton(Energy)
@@ -133,9 +128,9 @@ with open("bi207stream.txt", "w") as fout:
 
     timtot = 0.0
 
-    for i in range(1, 100_001):
+    for i in range(1, 1_000_001):
 
-        if rand() > 0:#srcfrac:
+        if rand() > srcfrac:
             drmax = drlong
             ilosh = 1
         else:
@@ -146,11 +141,6 @@ with open("bi207stream.txt", "w") as fout:
 
         DA, EA, ieA = pick_branch(Abranches)
         DB, EB, ieB = pick_branch(Bbranches)
-        TOTAL_EMISSIONS += 2
-        if ieB:
-            TOTAL_ELECTRON_EMISSIONS += 1
-        if ieA:
-            TOTAL_ELECTRON_EMISSIONS += 1
 
         IA, zA, rA, EeA, rrA = simulate_hit(DA, EA, ieA, drmax, ilosh)
         IB, zB, rB, EeB, rrB = simulate_hit(DB, EB, ieB, drmax, ilosh)
@@ -178,6 +168,4 @@ with open("bi207stream.txt", "w") as fout:
             fout.write(f"{i} {ilosh} {IB} {ieB} {tB} {rB} {zB} {EB} {EeB} {rrB} 1\n")
 
 
-print(f"Total Emissions: {TOTAL_EMISSIONS}. Total Electron Emissions: {TOTAL_ELECTRON_EMISSIONS}.")
-print(f"Outside Emissions: {TOTAL_OUTSIDE_EMISSIONS}.")
 print("Done")

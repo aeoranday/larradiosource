@@ -5,6 +5,7 @@ import click
 import numpy as np
 import numpy.typing as npt
 
+from collections import defaultdict
 from pathlib import Path
 from pprint import pprint
 from tomllib import load
@@ -16,17 +17,11 @@ def plot_amplitude_histogram(events: list[Event]) -> None:
 
     amplitudes: list[list[float, ...], list[float, ...]] = [[], []]
 
-    inside_count: int = 0
     for event in events:
-        if event.channels[0] == 0:
-            inside_count += 1
         if event.type == "electron":
             amplitudes[1].append(event.amplitudes[0])
         else:
             amplitudes[0].append(event.amplitudes[0])
-
-    outside_count: int = len(events) - inside_count
-    print(f"Inner disk count: {inside_count}\nOuter ring count: {outside_count}\n")
 
     bins: npt.NDArray[float] = np.arange(0.26, 2, 0.02)
     plt.figure(figsize=(6, 4), dpi=300, layout="constrained")
@@ -73,26 +68,13 @@ def main(config_path: Path) -> int:
     events: list[Event] = []
 
     event_count: int = 0
-    total_electron_emissions: int = 0
-    total_emissions: int = 0
-    outside_emissions: int = 0
-    target_emission_count: int = 200_000
-#    while event_count < num_events:
-    positions: list[npt.NDArray[float]] = []
-    while total_emissions < target_emission_count:
+    while event_count < num_events:
         had_event: bool = False
         for source in sources:
             emission: Emission = source.get_emission()
-            total_emissions += 1
-            if emission.type == "electron":
-                total_electron_emissions += 1
             position: npt.NDArray[float] = source.get_emission_position(emission)
-            positions.append(position)
             if not detector.geometry.is_inside(position):
-                outside_emissions += 1
-#                print(f"{np.linalg.norm(position[:2]):.2f}, {position[2]:.2f}")
-#                print(f"{detector.geometry.height:.2f}, {detector.geometry.radius:.2f}")
-#                input()
+                continue
 
             event: Event = detector.process_emission(emission, position)
             if len(event) > 0:
@@ -101,13 +83,6 @@ def main(config_path: Path) -> int:
         if had_event:
             event_count += 1
 
-#    pprint(events)
-    positions = np.asarray(positions)
-    with open("positions.npy", 'wb') as f:
-        np.save(f, positions)
-
-    print(f"Total Emissions: {total_emissions}. Total Electron Emissions: {total_electron_emissions}.")
-    print(f"Outside Emissions: {outside_emissions}")
     plot_amplitude_histogram(events)
     return 0
 

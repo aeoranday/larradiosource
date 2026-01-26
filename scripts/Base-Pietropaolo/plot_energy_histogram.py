@@ -7,19 +7,13 @@ import numpy.typing as npt
 from pathlib import Path
 
 
-DATA_PATH: Path = Path("~/Code/Bi-207 Simulation/Base-Pietropaolo/bi207stream.txt").expanduser()
+DATA_PATH: Path = Path("~/Code/Bi-207 Simulation/bi207_simulation/scripts/Base-Pietropaolo/bi207stream.txt").expanduser()
 
 
 def main() -> int:
     data: npt.NDArray[float] = np.loadtxt(DATA_PATH)
     data = data[data[:, 1] == 1]  # Only get the long TPC
     #data = data[data[:, -1] == 0]  # Only get branch A
-
-    radii = data[:, 5]
-
-    outside_count = np.sum(radii > 15)
-    inside_count = len(radii) - outside_count
-    print(f"Inner disk count: {inside_count}\nOuter ring count: {outside_count}\n")
 
     photons = data[data[:, 3] == 0]
     electrons = data[data[:, 3] == 1]
