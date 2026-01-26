@@ -32,7 +32,7 @@ class Emission(BaseModel):
         rand: float = np.random.rand()
         scatter_prob, eps = self._get_scatter_probability()
 
-        while rand <= scatter_prob:
+        while rand > scatter_prob:
             rand = np.random.rand()
             scatter_prob, eps = self._get_scatter_probability()
 
