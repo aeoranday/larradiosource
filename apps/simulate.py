@@ -61,9 +61,9 @@ def main(config_path: Path) -> int:
     sources.append(Source.model_validate(config_dict['source_A']))
     sources.append(Source.model_validate(config_dict['source_B']))
 
-    if "detector" not in config_dict:
-        raise KeyError(f"Configuration is missing the `detector` config section.")
-    detector: Detector = Detector.model_validate(config_dict['detector'])
+    if "detector_short" not in config_dict:
+        raise KeyError(f"Configuration is missing the `detector_short` config section.")
+    detector: Detector = Detector.model_validate(config_dict['detector_short'])
 
     events: list[Event] = []
 

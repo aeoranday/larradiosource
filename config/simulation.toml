@@ -1,6 +1,6 @@
-num_events = 25_000
+num_events = 250_000
 
-[detector]
+[detector_long]
 num_channels = 2
 channel_start_pos = 7.5
 channel_widths = [7.5, 7.5]
@@ -12,10 +12,28 @@ electron_lifetime_ms = 3
 channel_resolution_mev = 0.08
 signal_width = 12
 
-[detector.geometry]
+[detector_short]
+num_channels = 2
+channel_start_pos = 7.5
+channel_widths = [7.5, 7.5]
+channel_spacing = 15
+channel_increment_dir = "r"
+threshold = 0.26
+drift_velocity = 1.5
+electron_lifetime_ms = 3
+channel_resolution_mev = 0.08
+signal_width = 12
+
+[detector_long.geometry]
 type = "cylinder"
 radius = 30
 height = 205
+origin = [0, 0, 0]
+
+[detector_short.geometry]
+type = "cylinder"
+radius = 30
+height = 45
 origin = [0, 0, 0]
 
 [source_A]
