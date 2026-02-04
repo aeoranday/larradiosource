@@ -71,7 +71,7 @@ class Cylinder(BaseGeometry):
         """ Get a random face position at the base of the cylinder. """
         theta: float = np.random.rand() * 2 * np.pi
         radius: float = np.sqrt(np.random.rand()) * self.radius
-        return np.asarray([radius * np.cos(theta), radius * np.sin(theta), self.origin[-1]])
+        return np.asarray([radius * np.cos(theta), radius * np.sin(theta), 0]) + self.origin
 
 
 class RectangularPrism(BaseGeometry):
