@@ -7,12 +7,13 @@ import numpy.typing as npt
 from pathlib import Path
 
 
-DATA_PATH: Path = Path("~/Code/Bi-207 Simulation/bi207_simulation/scripts/Base-Pietropaolo/bi207stream.txt").expanduser()
+DATA_PATH: Path = Path("~/Code/Bi-207 Simulation/bi207_simulation/bi207stream.txt").expanduser()
 
 
 def main() -> int:
     data: npt.NDArray[float] = np.loadtxt(DATA_PATH)
-    data = data[data[:, 1] == 1]  # Only get the long TPC
+    data = data[data[:, 1] == 0]  # Only get the long TPC
+    print(data.shape)
     #data = data[data[:, -1] == 0]  # Only get branch A
 
     photons = data[data[:, 3] == 0]
