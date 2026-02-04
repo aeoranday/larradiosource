@@ -31,14 +31,27 @@ def plot_waveforms(waveforms: list[Waveform]) -> None:
 
 def plot_amplitude_histogram(events: list[Event]) -> None:
     amplitudes: list[list[float, ...], list[float, ...]] = [[], []]
-
+    off_amplitudes: list[list[float, ...], list[float, ...]] = [[], []]
+    
     for event in events:
-        if event.type == "electron":
-            amplitudes[1].append(event.amplitudes[0])
-        else:
-            amplitudes[0].append(event.amplitudes[0])
+        if 4 in event.channels or 3 in event.channels:
+            if event.type == "electron":
+                amplitudes[1].append(event.amplitudes[0] * 6.79)
+            else:
+                amplitudes[0].append(event.amplitudes[0] * 6.79)
+        elif 5 in event.channels or 2 in event.channels:
+            if event.type == "electron":
+                off_amplitudes[1].append(event.amplitudes[0] * 6.79)
+            else:
+                off_amplitudes[0].append(event.amplitudes[0] * 6.79)
 
-    bins: npt.NDArray[float] = np.arange(0.26, 2, 0.02)
+    with open("electron-channels.npz", 'wb') as f:
+        np.savez(f, electron=np.asarray(amplitudes[1]), photon=np.asarray(amplitudes[0]))
+
+    with open("photon-channels.npz", 'wb') as f:
+        np.savez(f, electron=np.asarray(off_amplitudes[1]), photon=np.asarray(off_amplitudes[0]))
+
+    bins: npt.NDArray[float] = np.arange(0.26, 2, 0.015) * 6.79
     plt.figure(figsize=(6, 4), dpi=300, layout="constrained")
     plt.hist(amplitudes,
              bins=bins,
@@ -50,9 +63,25 @@ def plot_amplitude_histogram(events: list[Event]) -> None:
     plt.legend(frameon=False)
 
     plt.title("Bi-207 Simulated Energy Emissions")
-    plt.xlabel("Energy (MeV)")
+    plt.xlabel("Charge (fC)")
     plt.ylabel("Count")
     plt.box(False)
+
+    plt.show()
+    plt.close()
+    return
+
+
+def plot_channel_histogram(events: list[Event]) -> None:
+    channels, counts = np.unique([event.channels for event in events], return_counts=True)
+    edges: npt.NDArray[int] = np.arange(channels.min()-0.5, channels.max()+1, 1.0)
+
+    plt.figure()
+    plt.box(False)
+
+    plt.stairs(counts, edges, color='k')
+    plt.xlabel("Channel Number")
+    plt.ylabel("Count")
 
     plt.show()
     plt.close()
@@ -76,9 +105,9 @@ def main(config_path: Path) -> int:
     sources.append(Source.model_validate(config_dict['source_A']))
     sources.append(Source.model_validate(config_dict['source_B']))
 
-    if "detector_short" not in config_dict:
-        raise KeyError(f"Configuration is missing the `detector_short` config section.")
-    detector: Detector = Detector.model_validate(config_dict['detector_short'])
+    if "detector" not in config_dict:
+        raise KeyError(f"Configuration is missing the `detector")
+    detector: Detector = Detector.model_validate(config_dict['detector'])
 
     events: list[Event] = []
 
@@ -99,13 +128,14 @@ def main(config_path: Path) -> int:
             event_count += 1
 
     plot_amplitude_histogram(events)
+    plot_channel_histogram(events)
 
-    signal_processor: PurityMonitorSignalProcessor = PurityMonitorSignalProcessor(500)
-    waveforms: list[Waveform] = []
-    for event in events:
-        waveforms += signal_processor.process_event(event)
-
-    plot_waveforms(waveforms)
+#    signal_processor: PurityMonitorSignalProcessor = PurityMonitorSignalProcessor(500)
+#    waveforms: list[Waveform] = []
+#    for event in events:
+#        waveforms += signal_processor.process_event(event)
+#
+#    plot_waveforms(waveforms)
     return 0
 
 
