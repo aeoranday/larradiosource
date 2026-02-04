@@ -157,15 +157,15 @@ with open("bi207stream.txt", "w") as fout:
 
         if IA and IB:
             if zB > zA:
-                fout.write(f"{i} {ilosh} {IB} {ieB} {tB} {rB} {zB} {EB} {EeB} {rrB} 1\n")
-                fout.write(f"{i} {ilosh} {IA} {ieA} {tA} {rA} {zA} {EA} {EeA} {rrA} 0\n")
+                fout.write(f"{i} {ilosh} {IB} {ieB} {tB} {rB} {zB} {EB} {EeB} {rrB}\n")
+                fout.write(f"{i} {ilosh} {IA} {ieA} {tA} {rA} {zA} {EA} {EeA} {rrA}\n")
             else:
-                fout.write(f"{i} {ilosh} {IA} {ieA} {tA} {rA} {zA} {EA} {EeA} {rrA} 0\n")
-                fout.write(f"{i} {ilosh} {IB} {ieB} {tB} {rB} {zB} {EB} {EeB} {rrB} 1\n")
+                fout.write(f"{i} {ilosh} {IA} {ieA} {tA} {rA} {zA} {EA} {EeA} {rrA}\n")
+                fout.write(f"{i} {ilosh} {IB} {ieB} {tB} {rB} {zB} {EB} {EeB} {rrB}\n")
         elif IA:
-            fout.write(f"{i} {ilosh} {IA} {ieA} {tA} {rA} {zA} {EA} {EeA} {rrA} 0\n")
+            fout.write(f"{i} {ilosh} {IA} {ieA} {tA} {rA} {zA} {EA} {EeA} {rrA}\n")
         elif IB:
-            fout.write(f"{i} {ilosh} {IB} {ieB} {tB} {rB} {zB} {EB} {EeB} {rrB} 1\n")
+            fout.write(f"{i} {ilosh} {IB} {ieB} {tB} {rB} {zB} {EB} {EeB} {rrB}\n")
 
 
 print("Done")
