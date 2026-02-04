@@ -1,7 +1,9 @@
 from bi207_simulation.detector import Detector, Event
 from bi207_simulation.radiation import Source, DecayBranch, Emission
+from bi207_simulation.signals import PurityMonitorSignalProcessor, Waveform
 
 import click
+import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
 
@@ -12,9 +14,22 @@ from tomllib import load
 from typing import Any
 
 
-def plot_amplitude_histogram(events: list[Event]) -> None:
-    import matplotlib.pyplot as plt
+def plot_waveforms(waveforms: list[Waveform]) -> None:
+    peaks: npt.NDArray[float] = np.asarray([waveform.peak for waveform in waveforms]) * 200
+    plt.figure()
+    plt.box(False)
 
+    plt.hist(peaks, bins=50, fill=False, edgecolor='k')
+
+    plt.xlabel("Peak ADC")
+    plt.ylabel("Count")
+
+    plt.show()
+    plt.close()
+    return
+
+
+def plot_amplitude_histogram(events: list[Event]) -> None:
     amplitudes: list[list[float, ...], list[float, ...]] = [[], []]
 
     for event in events:
@@ -84,6 +99,13 @@ def main(config_path: Path) -> int:
             event_count += 1
 
     plot_amplitude_histogram(events)
+
+    signal_processor: PurityMonitorSignalProcessor = PurityMonitorSignalProcessor(500)
+    waveforms: list[Waveform] = []
+    for event in events:
+        waveforms += signal_processor.process_event(event)
+
+    plot_waveforms(waveforms)
     return 0
 
 
