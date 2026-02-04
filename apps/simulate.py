@@ -36,14 +36,14 @@ def plot_amplitude_histogram(events: list[Event]) -> None:
     for event in events:
         if 4 in event.channels or 3 in event.channels:
             if event.type == "electron":
-                amplitudes[1].append(event.amplitudes[0] * 6.79)
+                amplitudes[1].append(event.amplitudes[0] * 6.79 * 0.5949)
             else:
-                amplitudes[0].append(event.amplitudes[0] * 6.79)
+                amplitudes[0].append(event.amplitudes[0] * 6.79 * 0.5949)
         elif 5 in event.channels or 2 in event.channels:
             if event.type == "electron":
-                off_amplitudes[1].append(event.amplitudes[0] * 6.79)
+                off_amplitudes[1].append(event.amplitudes[0] * 6.79 * 0.5949)
             else:
-                off_amplitudes[0].append(event.amplitudes[0] * 6.79)
+                off_amplitudes[0].append(event.amplitudes[0] * 6.79 * 0.5949)
 
     with open("electron-channels.npz", 'wb') as f:
         np.savez(f, electron=np.asarray(amplitudes[1]), photon=np.asarray(amplitudes[0]))
