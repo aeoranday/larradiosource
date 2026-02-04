@@ -88,11 +88,8 @@ class Source(BaseModel):
 #        random: npt.NDArray[float] = np.random.rand(3)
 
         r: float = -np.log(np.random.rand()) * emission.interaction_dist
-#        print("r", r)
         cos_theta: float = np.random.rand()#2*random[1] - 1
-#        print("cos_theta", cos_theta)
         phi = np.random.rand() * 2 * np.pi
-#        print("phi", phi)
         cos_phi: float = np.cos(phi)#2*random[0] - 1
         sin_phi: float = np.sin(phi)#np.sqrt(1 - cos_phi**2)
 
@@ -103,6 +100,4 @@ class Source(BaseModel):
                                             r * cos_theta],
                                            dtype=float)
 
-#        print("vec", vec)
         return face_pos + vec
-
