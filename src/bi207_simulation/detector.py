@@ -9,6 +9,7 @@ from typing import Any, Literal
 
 
 class Event(BaseModel):
+    main_channel_index: int = 0
     channels: tuple[int, ...] = []
     amplitudes: tuple[float, ...] = []
     type: Literal["electron", "photon", None] = None
@@ -34,6 +35,9 @@ class Detector(BaseModel):
     electron_lifetime_ms: float = 3  # ms
     channel_resolution_mev: float = 0.08
     signal_width: int = 12
+    fake_scale: float = 0.8
+    _Rc: float = 0.6980  # https://lar.bnl.gov/properties/ : R_c (Birks Model)
+    _fC_per_MeV: float = 6.79  # fC / MeV
 
     def model_post_init(self, ctx: Any) -> None:
         self._attenuation_dist_mm: float = self.electron_lifetime_ms * 1000 * self.drift_velocity
@@ -48,15 +52,34 @@ class Detector(BaseModel):
             channel_widths = np.asarray((self.channel_widths[0],) * self.num_channels)
 
         self._channel_center_positions: npt.NDArray[float] = np.arange(self.channel_start_pos,
-                                                                       self.num_channels * self.channel_spacing,
+                                                                       (self.num_channels + 1) * self.channel_spacing,
                                                                        self.channel_spacing)
         self._channel_coverage: npt.NDArray[float] = np.zeros((self.num_channels, 2))
         for channel in range(self.num_channels):
             center: float = self._channel_center_positions[channel]
             self._channel_coverage[channel] = (center - channel_widths[channel],
                                                center + channel_widths[channel])
+
+        self._channel_resolution_fC: float = self.channel_resolution_mev * self._fC_per_MeV
         return
 
+    def _reduce_electron_energy_to_charge(self, energy_mev: float, dist: float) -> float:
+        """
+        Apply recombination and attachment reduction factors for electron transport.
+
+        Makes use of the starting energy and travel distance and converts from energy to charge.
+
+        Parameters:
+            energy_mev (float):
+                Initial energy in MeV of the electron.
+            dist (float):
+                Distance to travel in mm.
+
+        Returns:
+            (float):
+                Resultant charge after transportation.
+        """
+        return self._Rc * np.exp(dist / self._attenuation_dist_mm) * energy_mev * self._fC_per_MeV * self.fake_scale
 
     def process_emission(self, emission: Emission, position: npt.NDArray[float]) -> Event:
         """
@@ -82,18 +105,26 @@ class Detector(BaseModel):
             energy = emission.get_compton_energy()
 
         dist: float = position[2] - (self.geometry.origin[2] + self.geometry.height)
-        energy *= np.exp(dist / self._attenuation_dist_mm)  # Electron survival
+        charge: float = self._reduce_electron_energy_to_charge(energy, dist)
 
+        main_channel_index: int = 0
+        idx: int = 0
+        min_channel_dist: float = np.inf
         channels: list[int] = []
         amplitudes: list[float] = []
         for channel in range(self.num_channels):
             coverage: npt.NDArray[float] = self._channel_coverage[channel]
+            center: float = self._channel_center_positions[channel]
             if r >= coverage[0] and r < coverage[1]:
-                rand_noise: float = self.channel_resolution_mev * (np.sum(np.random.rand(self.signal_width)) - self.signal_width / 2)
-                response: float = energy + rand_noise
+                rand_noise: float = self._channel_resolution_fC * (np.sum(np.random.rand(self.signal_width)) - self.signal_width / 2)
+                response: float = charge + rand_noise
                 if response < self.threshold:
                     continue
+                if (new_min := np.abs(r - center)) < min_channel_dist:
+                    min_channel_dist = new_min
+                    main_channel_index = idx
+                idx += 1
                 channels.append(channel)
-                amplitudes.append(energy + rand_noise)
+                amplitudes.append(response)
 
-        return Event(channels=channels, amplitudes=amplitudes, type=emission.type)
+        return Event(main_channel_index=main_channel_index, channels=channels, amplitudes=amplitudes, type=emission.type)
