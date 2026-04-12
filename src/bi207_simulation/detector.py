@@ -12,6 +12,7 @@ class Event(BaseModel):
     main_channel_index: int = 0
     channels: tuple[int, ...] = []
     amplitudes: tuple[float, ...] = []
+    init_emission: Emission | None = None
     type: Literal["electron", "photon", None] = None
 
     def model_post_init(self, ctx: Any) -> None:
@@ -127,4 +128,4 @@ class Detector(BaseModel):
                 channels.append(channel)
                 amplitudes.append(response)
 
-        return Event(main_channel_index=main_channel_index, channels=channels, amplitudes=amplitudes, type=emission.type)
+        return Event(main_channel_index=main_channel_index, channels=channels, amplitudes=amplitudes, type=emission.type, init_emission=emission)
