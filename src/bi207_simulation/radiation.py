@@ -55,11 +55,6 @@ class Source(BaseModel):
         prob_total: float = 0
         for branch in decay_branches:
             prob_total += branch.probability
-#            print(f"Total P.: {prob_total:.4f}. Int. Dist.: {branch.emission.interaction_dist:>5.1f}. Prob.: {branch.probability}. Energy: {branch.emission.energy_mev:.3f}.")
-
-#        print()
-#        for branch in decay_branches:
-#            branch.probability /= prob_total
 
         return decay_branches
 
@@ -85,13 +80,11 @@ class Source(BaseModel):
         if emission.interaction_dist == 0:
             return face_pos
 
-#        random: npt.NDArray[float] = np.random.rand(3)
-
         r: float = -np.log(np.random.rand()) * emission.interaction_dist
-        cos_theta: float = np.random.rand()#2*random[1] - 1
+        cos_theta: float = 2*np.random.rand() - 1
         phi = np.random.rand() * 2 * np.pi
-        cos_phi: float = np.cos(phi)#2*random[0] - 1
-        sin_phi: float = np.sin(phi)#np.sqrt(1 - cos_phi**2)
+        cos_phi: float = np.cos(phi)
+        sin_phi: float = np.sin(phi)
 
         sin_theta: float = np.sqrt(1 - cos_theta**2)
 
