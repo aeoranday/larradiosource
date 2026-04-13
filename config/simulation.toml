@@ -2,9 +2,9 @@ num_events = 250_000
 
 [detector_long]
 num_channels = 2
-channel_start_pos = 7.5
-channel_widths = [7.5, 7.5]
-channel_spacing = 15
+channel_start_pos = 0.75
+channel_widths = [0.75, 0.75]
+channel_spacing = 1.5
 channel_increment_dir = "r"
 threshold = 0.26
 drift_velocity = 1.5
@@ -14,9 +14,9 @@ signal_width = 12
 
 [detector_short]
 num_channels = 2
-channel_start_pos = 7.5
-channel_widths = [7.5, 7.5]
-channel_spacing = 15
+channel_start_pos = 0.75
+channel_widths = [0.75, 0.75]
+channel_spacing = 1.5
 channel_increment_dir = "r"
 threshold = 0.26
 drift_velocity = 1.5
