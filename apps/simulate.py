@@ -89,22 +89,26 @@ def simulate_events(num_events: int, worker_id: int, detector: Detector, sources
     events: list[Event] = []
 
     event_count: int = 0
-    pbar = tqdm(total=num_events, position=worker_id, disable=True)
-    while event_count < num_events:
-        had_event: bool = False
-        for source in sources:
-            emission: Emission = source.get_emission()
-            position: npt.NDArray[float] = source.get_emission_position(emission)
-            if not detector.geometry.is_inside(position):
-                continue
+    pbar = tqdm(total=num_events, position=worker_id)
 
-            event: Event = detector.process_emission(emission, position)
-            if len(event) > 0:
+    # This condition can overshoot: a decay branch can have multiple emissions and multiple events.
+    while event_count < num_events:
+        new_event_count: int = 0
+        for source in sources:
+            emissions: list[Emission, ...] = source.get_random_decay_emissions()
+            for emission in emissions:
+                position: npt.NDArray[float] = source.get_emission_position(emission)
+                if not detector.geometry.is_inside(position):
+                    continue
+
+                event: Event = detector.process_emission(emission, position)
+                # Emissions may be below threshold and result in an empty Event.
+                if len(event.amplitudes) == 0:
+                    continue
                 events.append(event)
-                had_event = True
-        if had_event:
-            event_count += 1
-            pbar.update(1)
+                new_event_count += 1
+        event_count += new_event_count
+        pbar.update(new_event_count)
     return events
 
 
