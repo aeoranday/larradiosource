@@ -1,3 +1,5 @@
+from .random import BaseRNGModel
+
 import numpy as np
 import numpy.typing as npt
 import pydantic_numpy.typing as pnpt
@@ -11,7 +13,7 @@ type Vector2 = tuple[float, float]
 type Vector3 = tuple[float, float, float]
 
 
-class BaseGeometry(ABC, BaseModel):
+class BaseGeometry(ABC, BaseRNGModel):
     """
     The abstract base geometry class.
     """
@@ -69,8 +71,9 @@ class Cylinder(BaseGeometry):
 
     def get_random_face_position(self) -> pnpt.Np1DArray:
         """ Get a random face position at the base of the cylinder. """
-        theta: float = np.random.rand() * 2 * np.pi
-        radius: float = np.sqrt(np.random.rand()) * self.radius
+        rng: np.random.Generator = self.get_random_generator()
+        theta: float = rng.random() * 2 * np.pi
+        radius: float = np.sqrt(rng.random()) * self.radius
         return np.asarray([radius * np.cos(theta), radius * np.sin(theta), 0]) + self.origin
 
 
@@ -102,5 +105,6 @@ class RectangularPrism(BaseGeometry):
 
     def get_random_face_position(self) -> pnpt.Np1DArray:
         """ Get a random face position at the base of the rectangular prism. """
-        rands: npt.NDArray[float] = np.random.rand(2) * self.face_size
+        rng: np.random.Generator = self.get_random_generator()
+        rands: npt.NDArray[float] = rng.random(2) * self.face_size
         return np.asarray([rands[0], rands[1], self.origin[-1]])

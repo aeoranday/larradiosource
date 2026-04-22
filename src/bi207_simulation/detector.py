@@ -1,5 +1,6 @@
 from .geometry import Cylinder, RectangularPrism
 from .radiation import Emission
+from .random import BaseRNGModel
 
 import numpy as np
 import numpy.typing as npt
@@ -24,7 +25,7 @@ class Event(BaseModel):
         return len(self.channels)
 
 
-class Detector(BaseModel):
+class Detector(BaseRNGModel):
     geometry: Cylinder | RectangularPrism = Field(discriminator="type")
     num_channels: int
     channel_widths: tuple[float, ...]
@@ -108,6 +109,8 @@ class Detector(BaseModel):
         dist: float = position[2] - (self.geometry.origin[2] + self.geometry.height)
         charge: float = self._reduce_electron_energy_to_charge(energy, dist)
 
+        rng: np.random.Generator = self.get_random_generator()
+
         main_channel_index: int = 0
         idx: int = 0
         min_channel_dist: float = np.inf
@@ -117,7 +120,7 @@ class Detector(BaseModel):
             coverage: npt.NDArray[float] = self._channel_coverage[channel]
             center: float = self._channel_center_positions[channel]
             if r >= coverage[0] and r < coverage[1]:
-                rand_noise: float = self._channel_resolution_fC * (np.sum(np.random.rand(self.signal_width)) - self.signal_width / 2)
+                rand_noise: float = self._channel_resolution_fC * (np.sum(rng.random(self.signal_width)) - self.signal_width / 2)
                 response: float = charge + rand_noise
                 if response < self.threshold:
                     continue

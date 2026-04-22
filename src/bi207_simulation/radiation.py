@@ -1,4 +1,5 @@
 from .geometry import Cylinder, RectangularPrism
+from .random import BaseRNGModel
 
 import numpy as np
 import numpy.typing as npt
@@ -7,7 +8,7 @@ from pydantic import BaseModel, Field, field_validator
 from typing import Literal
 
 
-class Emission(BaseModel):
+class Emission(BaseRNGModel):
     type: Literal["photon", "electron"]
     energy_mev: float
     interaction_dist: float = 0
@@ -16,8 +17,9 @@ class Emission(BaseModel):
         """
         Get the Compton scattering probability using the Klein-Nishina formula.
         """
+        rng: np.random.Generator = self.get_random_generator()
         ratio: float = self.energy_mev / 0.511  # m_e * c**2: MeV
-        cos_theta: float = 2 * np.random.rand() - 1
+        cos_theta: float = 2 * rng.random() - 1
         eps: float = 1 / (1 + ratio * (1 - cos_theta))
         return (eps**2 * (eps + 1 / eps - (1 - cos_theta**2)) / 2, eps)
 
@@ -25,11 +27,12 @@ class Emission(BaseModel):
         """
         Get the electron energy from Compton scattering using the Klein-Nishina formula.
         """
+        rng: np.random.Generator = self.get_random_generator()
         # It would only really make sense to make this call if the type is a photon.
         if self.type == "electron":
             return self.energy_mev
 
-        rand: float = np.random.rand()
+        rand: float = rng.random()
         scatter_prob, eps = self._get_scatter_probability()
 
         while rand > scatter_prob:
@@ -44,7 +47,7 @@ class DecayBranch(BaseModel):
     emission: Emission
 
 
-class Source(BaseModel):
+class Source(BaseRNGModel):
     decay_branches: tuple[DecayBranch, ...]
     decay_rate: float  # Bq
     geometry: Cylinder | RectangularPrism = Field(discriminator="type")
@@ -58,16 +61,17 @@ class Source(BaseModel):
 
         return decay_branches
 
-    def get_emission(self) -> Emission:
-        """
-        Get a random decay branch to produce an emission with.
-        """
-        random: float = np.random.rand()
-        prob: float = 0
+    def _get_random_decay_branch(self) -> DecayBranch:
+        """ Get a random decay branch. """
+        rng: np.random.Generator = self.get_random_generator()
+
+        rand: float = rng.random()
+        prob_total: float = 0
         for branch in self.decay_branches:
-            prob += branch.probability
-            if random < prob:
-                return branch.emission
+            prob_total += branch.probability
+            if rand < prob_total:
+                return branch
+        return branch
 
         # Assuming a rounding error, default to returning the last branch.
         return branch.emission
@@ -76,13 +80,14 @@ class Source(BaseModel):
         """
         Get the emission position on the x-y plane and depth for photons.
         """
+        rng: np.random.Generator = self.get_random_generator()
         face_pos: npt.NDArray[float] = self.geometry.get_random_face_position()
         if emission.interaction_dist == 0:
             return face_pos
 
-        r: float = -np.log(np.random.rand()) * emission.interaction_dist
-        cos_theta: float = 2*np.random.rand() - 1
-        phi = np.random.rand() * 2 * np.pi
+        r: float = -np.log(rng.random()) * emission.interaction_dist
+        cos_theta: float = 2*rng.random() - 1
+        phi = rng.random() * 2 * np.pi
         cos_phi: float = np.cos(phi)
         sin_phi: float = np.sin(phi)
 
