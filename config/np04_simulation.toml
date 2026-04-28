@@ -1,6 +1,6 @@
 [simulation]
 num_workers = 28
-num_events = 573_000
+num_events = 916_000
 detector_name = "detector"
 sources = ["anode_Bi207"]#, "far_source_A", "far_source_B"]
 stat_divergence = "chi2"
@@ -13,10 +13,10 @@ channel_spacing = 4.79
 channel_increment_dir = "x"
 threshold = 0.30
 drift_velocity = 1.6
-fake_scale = 0.8175
-electron_lifetime_ms = 3.0
-signal_width = 7
-channel_resolution_mev = 0.065
+fake_scale = 0.80#175
+electron_lifetime_ms = 20.0
+signal_width = 58
+channel_resolution_mev = 0.0236
 
 [detector.geometry]
 type = "rectangular_prism"
