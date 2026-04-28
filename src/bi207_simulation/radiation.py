@@ -18,10 +18,12 @@ class Emission(BaseRNGModel):
     @field_validator("internal_conversion_coefficients")
     @classmethod
     def validate_internal_conversion_coefficients(cls, internal_conversion_coefficients) -> dict[str, float]:
-        """ Check the keys are reasonable shells names. """
+        """Check the keys are reasonable shells names."""
         for shell_str in internal_conversion_coefficients:
             if shell_str.upper() not in ("K", "L", "M", "N"):
-                raise KeyError(f"Internal conversion shell string {shell_str} is not implemented. Use one of [K, L, M, N].")
+                raise KeyError(
+                    f"Internal conversion shell string {shell_str} is not implemented. Use one of [K, L, M, N]."
+                )
         return internal_conversion_coefficients
 
     def _get_scatter_probability(self) -> float:
@@ -75,14 +77,19 @@ class Emission(BaseRNGModel):
                 try:
                     corrected_energy: float = self.energy_mev - shell_to_binding_energy[shell_str]
                 except KeyError:
-                    raise KeyError("Mismatch on Emission's IC coefficients and shell binding energies.\n"
-                                   f"Missing {shell_str} in the shell binding energies.")
-                return Emission.model_validate(dict(type="electron",
-                                energy_mev=corrected_energy,
-                                interaction_dist=0,
-                                internal_conversion_coefficients={},
-                                is_corrected=True,
-                                ))
+                    raise KeyError(
+                        "Mismatch on Emission's IC coefficients and shell binding energies.\n"
+                        f"Missing {shell_str} in the shell binding energies."
+                    )
+                return Emission.model_validate(
+                    dict(
+                        type="electron",
+                        energy_mev=corrected_energy,
+                        interaction_dist=0,
+                        internal_conversion_coefficients={},
+                        is_corrected=True,
+                    )
+                )
 
         # If we did not convert to an electron, then it stayed a photon and should not be corrected again.
         return self.model_copy(update=dict(is_corrected=True))
@@ -102,7 +109,9 @@ class DecayBranch(BaseModel):
 
         Returns list of Emissions.
         """
-        corrected_emissions: list[Emission, ...] = [emission.get_corrected_emission(shell_to_binding_energy) for emission in self.emissions]
+        corrected_emissions: list[Emission, ...] = [
+            emission.get_corrected_emission(shell_to_binding_energy) for emission in self.emissions
+        ]
         return corrected_emissions
 
 
@@ -120,21 +129,25 @@ class Source(BaseRNGModel):
             prob_total += branch.probability
 
         if np.abs(prob_total - 1) > 0.01:
-            raise ValueError(f"Total decay branch probabilities is {prob_total}. This is outside a tolerance of 1 +- 0.01.")
+            raise ValueError(
+                f"Total decay branch probabilities is {prob_total}. This is outside a tolerance of 1 +- 0.01."
+            )
 
         return decay_branches
 
     @field_validator("daughter_shell_to_binding_energy")
     @classmethod
-    def validate_daughter_shell_to_binding_energy(cls, daughter_shell_to_binding_energy: dict[str, float]) -> dict[str, float]:
-        """ Check that the keys are sensible to atomic shells. """
+    def validate_daughter_shell_to_binding_energy(
+        cls, daughter_shell_to_binding_energy: dict[str, float]
+    ) -> dict[str, float]:
+        """Check that the keys are sensible to atomic shells."""
         for shell_str in daughter_shell_to_binding_energy.keys():
             if shell_str.upper() not in ("K", "L", "M", "N"):
                 raise KeyError(f"Daughter shell string {shell_str} is not implemented. Use one of [K, L, M, N].")
         return daughter_shell_to_binding_energy
 
     def _get_random_decay_branch(self) -> DecayBranch:
-        """ Get a random decay branch. """
+        """Get a random decay branch."""
         rng: np.random.Generator = self.get_random_generator()
 
         rand: float = rng.random()
@@ -163,16 +176,15 @@ class Source(BaseRNGModel):
             return face_pos
 
         r: float = -np.log(rng.random()) * emission.interaction_dist
-        cos_theta: float = 2*rng.random() - 1
+        cos_theta: float = 2 * rng.random() - 1
         phi = rng.random() * 2 * np.pi
         cos_phi: float = np.cos(phi)
         sin_phi: float = np.sin(phi)
 
         sin_theta: float = np.sqrt(1 - cos_theta**2)
 
-        vec: npt.NDArray[float] = np.array([r * cos_phi * sin_theta,
-                                            r * sin_phi * sin_theta,
-                                            r * cos_theta],
-                                           dtype=float)
+        vec: npt.NDArray[float] = np.array(
+            [r * cos_phi * sin_theta, r * sin_phi * sin_theta, r * cos_theta], dtype=float
+        )
 
         return face_pos + vec

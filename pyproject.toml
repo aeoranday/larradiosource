@@ -10,9 +10,10 @@ description = "Bismuth 207 decay simulator for liquid argon time projection cham
 maintainers = [
 	{ name = "A. Oranday", email = "alejandro@oran.day" },
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 dependencies = [
 	"click>=8.3.1",
+	"h5py>=3.15.1",
 	"numpy>=2.0.0",
 	"pydantic>=2.12",
 	"pydantic-numpy>=9.0.1",
@@ -20,7 +21,7 @@ dependencies = [
 
 [tool.black]
 line-length = 120
-target-version = [ "py311" ]
+target-version = [ "py314" ]
 
 [tool.isort]
 profile = "black"
@@ -34,7 +35,7 @@ select = [ "E", "F", "W", "B" ]
 exclude = [ ".git", "__pycache__", "build", "dist", ".venv" ]
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.14"
 disallow_untyped_defs = true
 check_untyped_defs = true
 ignore_missing_imports = true
