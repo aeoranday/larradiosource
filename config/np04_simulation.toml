@@ -4,6 +4,7 @@ num_events = 916_000
 detector_name = "detector"
 sources = ["anode_Bi207"]#, "far_source_A", "far_source_B"]
 stat_divergence = "chi2"
+random_seed = 42
 
 [detector]
 num_channels = 300

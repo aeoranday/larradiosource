@@ -199,6 +199,9 @@ def main(config_path: Path, save_path: Path) -> int:
     source_list: list[str] = simulation_config.get("sources", ["source"])
     detector_name: str = simulation_config.get("detector_name", "detector")
     config_save_path: Path | None = simulation_config.get("save_path", None)
+    random_seed: int | None = simulation_config.get("random_seed")
+
+    rng: np.random.Generator = np.random.default_rng(seed=random_seed)
 
     # Check that there is a save path to use.
     if config_save_path is None and save_path is None:
@@ -216,11 +219,16 @@ def main(config_path: Path, save_path: Path) -> int:
     for source_name in source_list:
         if source_name not in config_dict:
             raise KeyError(f"Configuration is missing the `{source_name}` config section.")
-        sources.append(Source.model_validate(config_dict[source_name]))
+        source: Source = Source.model_validate(config_dict[source_name])
+        source.set_random_generator(rng.spawn(1)[0])
+        source.geometry.set_random_generator(rng.spawn(1)[0])
+        sources.append(source)
 
     if detector_name not in config_dict:
         raise KeyError(f"Configuration is missing the `{detector_name}` config section.")
     detector: Detector = Detector.model_validate(config_dict[detector_name])
+    detector.set_random_generator(rng.spawn(1)[0])
+    detector.geometry.set_random_generator(rng.spawn(1)[0])
     run_simulation(processor_count, num_events, detector, sources, save_path)
     return 0
 
