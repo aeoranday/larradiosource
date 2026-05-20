@@ -72,7 +72,7 @@ def calculate_charge_distribution(events: list[Event], max_count_channel: int) -
     return (source_electron_counts, source_photon_counts), (gamma_electron_counts, gamma_photon_counts)
 
 
-def simulate_events(num_events: int, worker_id: int, detector: Detector, sources: list[Source]) -> list[Event]:
+def simulate_events(num_events: int, worker_id: int, detector: Detector, sources: list[Source], use_tqdm: bool) -> list[Event]:
     """
     Simulate for n events with the given detector and sources.
 
@@ -83,13 +83,15 @@ def simulate_events(num_events: int, worker_id: int, detector: Detector, sources
             The detector to read out from.
         sources (list[Source]):
             The sources that will be decaying.
+        use_tqdm (bool):
+            Flag on whether to use tqdm progress tracking or not.
 
     Returns a list of Events that has a length equal to `num_events`.
     """
     events: list[Event] = []
 
     event_count: int = 0
-    pbar = tqdm(total=num_events, position=worker_id)
+    pbar = tqdm(total=num_events, position=worker_id, disable=not use_tqdm)
 
     # This condition can overshoot: a decay branch can have multiple emissions and multiple events.
     while event_count < num_events:
@@ -130,6 +132,7 @@ def run_simulation(processor_count: int,
                    num_events: int,
                    detector: Detector,
                    sources: list[Source],
+                   use_tqdm: bool,
                    sim_save_path: Path,
                    ) -> None:
     """
@@ -144,6 +147,8 @@ def run_simulation(processor_count: int,
             The detector that will process emissions.
         sources (list[Source]):
             The list of Sources that will produce emissions.
+        use_tqdm (bool):
+            Flag on whether to use tqdm progress tracking or not.
     """
     num_events_per_processor: list[int] = [num_events // processor_count,] * processor_count
     if (remainder_event_count := num_events % processor_count) != 0:
@@ -152,7 +157,7 @@ def run_simulation(processor_count: int,
     events: list[Event] = []
 
     with ProcessPoolExecutor(max_workers=processor_count) as executor:
-        futures = [executor.submit(simulate_events, n, idx, detector, sources) for idx, n in enumerate(num_events_per_processor)]
+        futures = [executor.submit(simulate_events, n, idx, detector, sources, use_tqdm) for idx, n in enumerate(num_events_per_processor)]
         for future in futures:
             events += future.result()
 
@@ -186,7 +191,8 @@ def run_simulation(processor_count: int,
 @click.command()
 @click.argument("config_path", type=click.Path(readable=True, resolve_path=True, path_type=Path))
 @click.option("--save-path", '-s', type=click.Path(writable=True, resolve_path=True, path_type=Path))
-def main(config_path: Path, save_path: Path) -> int:
+@click.option("--use-tqdm", '-t', is_flag=True, default=False)
+def main(config_path: Path, save_path: Path, use_tqdm: bool) -> int:
     with open(config_path, 'rb') as f:
         config_dict: dict[str, Any] = load(f)
 
@@ -200,8 +206,13 @@ def main(config_path: Path, save_path: Path) -> int:
     detector_name: str = simulation_config.get("detector_name", "detector")
     config_save_path: Path | None = simulation_config.get("save_path", None)
     random_seed: int | None = simulation_config.get("random_seed")
+    config_use_tqdm: bool | None = simulation_config.get("use_tqdm", False)
 
     rng: np.random.Generator = np.random.default_rng(seed=random_seed)
+
+    # If the flag is false and config is true, use the config value.
+    if not use_tqdm and config_use_tqdm:
+        use_tqdm = config_use_tqdm
 
     # Check that there is a save path to use.
     if config_save_path is None and save_path is None:
@@ -229,7 +240,7 @@ def main(config_path: Path, save_path: Path) -> int:
     detector: Detector = Detector.model_validate(config_dict[detector_name])
     detector.set_random_generator(rng.spawn(1)[0])
     detector.geometry.set_random_generator(rng.spawn(1)[0])
-    run_simulation(processor_count, num_events, detector, sources, save_path)
+    run_simulation(processor_count, num_events, detector, sources, use_tqdm, save_path)
     return 0
 
 
