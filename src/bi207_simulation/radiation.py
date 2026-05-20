@@ -14,6 +14,17 @@ class Emission(BaseRNGModel):
     interaction_dist: float = 0
     internal_conversion_coefficients: dict[str, float]
     is_corrected: bool = False
+    _kn_tol: float = 1e-8  # Klein-Nishina sampling tolerance
+
+    def model_post_init(self, ctx: Any) -> None:
+        # Set the constant values for Klein-Nishina CDF.
+        # Min. value is at cos_theta = -1. This is the integral's offset.
+        self._integral_kn_constant_min: float = self._integrated_modified_klein_nishina(-1)
+
+        # Max. value is at cos_theta = 1. Used for normalization of the integral.
+        self._integral_kn_constant_max: float = self._integrated_modified_klein_nishina(1)
+        self._kn_cdf_normalization: float = self._integral_kn_constant_max - self._integral_kn_constant_min
+        return
 
     @field_validator("internal_conversion_coefficients")
     @classmethod
@@ -36,23 +47,79 @@ class Emission(BaseRNGModel):
         eps: float = 1 / (1 + ratio * (1 - cos_theta))
         return (eps**2 * (eps + 1 / eps - (1 - cos_theta**2)) / 2, eps)
 
+    def _modified_klein_nishina(self, cos_theta: float) -> float:
+        """
+        Formula for the modified Klein-Nishina equation.
+        Used to calculate the Compton scattering energy.
+
+        Parameters:
+            cos_theta (float):
+                The scattering angle of the photon.
+
+        Returns the normalized Klein-Nishina value.
+        """
+        reduced_energy: float = self.energy_mev / 0.511  # m_e * c**2 : MeV
+        energy_offset: float = 1 + reduced_energy * (1 - cos_theta)
+        return  (1 / energy_offset + energy_offset + cos_theta**2 - 1) / (2 * energy_offset**2)
+
+    def _integrated_modified_klein_nishina(self, cos_theta: float) -> float:
+        """
+        Integral of the modified Klein-Nishina equation with respect to cos_theta.
+        Used to calculate the Compton scattering energy.
+
+        Parameters:
+            cos_theta (float):
+                The scattering angle of the photon.
+
+        Returns the valued of the integrated, modified Klein-Nishina.
+        """
+        reduced_energy: float = self.energy_mev / 0.511  # m_e * c**2 : MeV
+        energy_offset: float = 1 + reduced_energy * (1 - cos_theta)
+        inverse_reduced_energy_factor: float = 2 / reduced_energy**2 + 2 / reduced_energy - 1
+        return (
+                    1 / (2 * energy_offset**2)
+                    + (cos_theta**2 - 1) / energy_offset
+                    + 2 * (cos_theta - 1) / reduced_energy
+                    + np.log(energy_offset) * inverse_reduced_energy_factor
+               ) / (2 * reduced_energy)
+
+    def _klein_nishina_cdf(self, cos_theta: float) -> float:
+        """
+        Cumulative density function for the modified Klein-Nishina formula.
+        Makes use of the the integrated formula.
+
+        Parameters:
+            energy (float):
+                The energy of the photon.
+            cos_theta (float):
+                The scattering angle of the photon.
+
+        Returns the CDF value from the integrated Klein-Nishina formula.
+        """
+        return (self._integrated_modified_klein_nishina(cos_theta) - self._integral_kn_constant_min) / self._kn_cdf_normalization
+
+
     def get_compton_energy(self) -> float:
         """
         Get the electron energy from Compton scattering using the Klein-Nishina formula.
         """
-        rng: np.random.Generator = self.get_random_generator()
         # It would only really make sense to make this call if the type is a photon.
         if self.type == "electron":
             return self.energy_mev
 
+        rng: np.random.Generator = self.get_random_generator()
+
         rand: float = rng.random()
-        scatter_prob, eps = self._get_scatter_probability()
+        cos_theta: float = 1
+        for idx in range(1_000):  # Hard-set for now.
+            delta: float = (self._klein_nishina_cdf(cos_theta) - rand) / (self._modified_klein_nishina(cos_theta) / self._kn_cdf_normalization)
+            cos_theta -= delta
+            if np.abs(delta) < self._kn_tol:
+                break
+        else:
+            raise RuntimeError(f"Failed to get a Compton energy under tolerance: found {delta} >= {self._kn_tol}.")
 
-        while rand > scatter_prob:
-            rand = np.random.rand()
-            scatter_prob, eps = self._get_scatter_probability()
-
-        return self.energy_mev * (1 - eps)
+        return self.energy_mev * (1 - 1 / (1 + self.energy_mev / 0.511 * (1 - cos_theta)))
 
     def get_corrected_emission(self, shell_to_binding_energy: dict[str, float]) -> Emission:
         """
