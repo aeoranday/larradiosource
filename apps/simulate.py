@@ -121,7 +121,7 @@ def categorize_events(events: list[Event]) -> dict[str, dict[str, list[float]]]:
         emission: Emission = event.init_emission
         subcategory: dict[str, list[float]] = categories[emission.type]
         # Prefer to index as keV and integers.
-        subcategory[(int(emission.energy_mev * 1e3), event.channels[event.main_channel_index])].append(event.amplitudes[event.main_channel_index])
+        subcategory[(emission.energy_mev, event.channels[event.main_channel_index])].append(event.amplitudes[event.main_channel_index])
 
     return categories
 
