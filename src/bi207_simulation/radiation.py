@@ -60,7 +60,7 @@ class Emission(BaseRNGModel):
         """
         reduced_energy: float = self.energy_mev / 0.511  # m_e * c**2 : MeV
         energy_offset: float = 1 + reduced_energy * (1 - cos_theta)
-        return  (1 / energy_offset + energy_offset + cos_theta**2 - 1) / (2 * energy_offset**2)
+        return (1 / energy_offset + energy_offset + cos_theta**2 - 1) / (2 * energy_offset**2)
 
     def _integrated_modified_klein_nishina(self, cos_theta: float) -> float:
         """
@@ -77,11 +77,11 @@ class Emission(BaseRNGModel):
         energy_offset: float = 1 + reduced_energy * (1 - cos_theta)
         inverse_reduced_energy_factor: float = 2 / reduced_energy**2 + 2 / reduced_energy - 1
         return (
-                    1 / (2 * energy_offset**2)
-                    + (cos_theta**2 - 1) / energy_offset
-                    + 2 * (cos_theta - 1) / reduced_energy
-                    + np.log(energy_offset) * inverse_reduced_energy_factor
-               ) / (2 * reduced_energy)
+            1 / (2 * energy_offset**2)
+            + (cos_theta**2 - 1) / energy_offset
+            + 2 * (cos_theta - 1) / reduced_energy
+            + np.log(energy_offset) * inverse_reduced_energy_factor
+        ) / (2 * reduced_energy)
 
     def _klein_nishina_cdf(self, cos_theta: float) -> float:
         """
@@ -96,8 +96,9 @@ class Emission(BaseRNGModel):
 
         Returns the CDF value from the integrated Klein-Nishina formula.
         """
-        return (self._integrated_modified_klein_nishina(cos_theta) - self._integral_kn_constant_min) / self._kn_cdf_normalization
-
+        return (
+            self._integrated_modified_klein_nishina(cos_theta) - self._integral_kn_constant_min
+        ) / self._kn_cdf_normalization
 
     def get_compton_energy(self) -> float:
         """
@@ -112,7 +113,9 @@ class Emission(BaseRNGModel):
         rand: float = rng.random()
         cos_theta: float = 1
         for idx in range(1_000):  # Hard-set for now.
-            delta: float = (self._klein_nishina_cdf(cos_theta) - rand) / (self._modified_klein_nishina(cos_theta) / self._kn_cdf_normalization)
+            delta: float = (self._klein_nishina_cdf(cos_theta) - rand) / (
+                self._modified_klein_nishina(cos_theta) / self._kn_cdf_normalization
+            )
             cos_theta -= delta
             if np.abs(delta) < self._kn_tol:
                 break
