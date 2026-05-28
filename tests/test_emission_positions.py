@@ -1,4 +1,4 @@
-from bi207_simulation.radiation import Source, Emission
+from larradiosource.radiation import Source, Emission
 
 import numpy as np
 import numpy.typing as npt

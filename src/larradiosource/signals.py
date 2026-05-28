@@ -1,4 +1,4 @@
-from bi207_simulation.detector import Event
+from larradiosource.detector import Event
 
 import numpy as np
 import numpy.typing as npt

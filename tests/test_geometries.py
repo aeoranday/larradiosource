@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from bi207_simulation.geometry.cylinder import Cylinder
-from bi207_simulation.geometry.rectangular_prism import RectangularPrism
+from larradiosource.geometry.cylinder import Cylinder
+from larradiosource.geometry.rectangular_prism import RectangularPrism
 
 import numpy as np
 import numpy.typing as npt

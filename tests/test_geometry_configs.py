@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from bi207_simulation.config.geometry.registry import get_geometry_config
-from bi207_simulation.geometry.cylinder import Cylinder
+from larradiosource.config.geometry.registry import get_geometry_config
+from larradiosource.geometry.cylinder import Cylinder
 
 from typing import Any
 

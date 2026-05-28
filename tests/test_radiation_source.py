@@ -1,4 +1,4 @@
-from bi207_simulation.radiation import Source
+from larradiosource.radiation import Source
 
 from tomllib import load
 

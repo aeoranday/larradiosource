@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "bi207_simulation"
+name = "larradiosource"
 version = "0.0.0"
 license = { file = "LICENSE" }
 description = "Bismuth 207 decay simulator for liquid argon time projection chambers."

@@ -1,6 +1,6 @@
-from bi207_simulation.detector import Detector, Event
-from bi207_simulation.radiation import Source, DecayBranch, Emission
-from bi207_simulation.signals import PurityMonitorSignalProcessor, Waveform
+from larradiosource.detector import Detector, Event
+from larradiosource.radiation import Source, DecayBranch, Emission
+from larradiosource.signals import PurityMonitorSignalProcessor, Waveform
 
 import click
 import h5py
