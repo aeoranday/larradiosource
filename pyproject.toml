@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "larradiosource"
 version = "0.0.0"
 license = { file = "LICENSE" }
-description = "Bismuth 207 decay simulator for liquid argon time projection chambers."
+description = "Radioactive source decay simulator for liquid argon time projection chambers."
 maintainers = [
 	{ name = "A. Oranday", email = "alejandro@oran.day" },
 ]
@@ -17,6 +17,11 @@ dependencies = [
 	"numpy>=2.0.0",
 	"pydantic>=2.12",
 	"pydantic-numpy>=9.0.1",
+]
+classifiers = [
+	"Intended Audience :: Science/Research",
+	"Topic :: Scientific/Engineering",
+	"Programming Language :: Python :: 3",
 ]
 
 [tool.black]
