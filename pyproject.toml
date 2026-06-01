@@ -24,6 +24,9 @@ classifiers = [
 	"Programming Language :: Python :: 3",
 ]
 
+[project.scripts]
+larradiosource = "larradiosource.cli.main:cli"
+
 [tool.black]
 line-length = 120
 target-version = [ "py314" ]
