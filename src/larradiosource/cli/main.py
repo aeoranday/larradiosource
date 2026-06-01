@@ -11,12 +11,18 @@ from tomllib import load
 from typing import Any
 
 
-@click.command()
+@click.group()
+def cli():
+    """LArRadioSource -- Simulate radioactive sources deployed in LArTPCs."""
+    pass
+
+
+@cli.command("simulate")
 @click.argument("config_path", type=click.Path(readable=True, resolve_path=True, path_type=Path))
-@click.option("--save-path", '-s', type=click.Path(writable=True, resolve_path=True, path_type=Path))
+@click.option("--output", '-o', type=click.Path(writable=True, resolve_path=True, path_type=Path))
 @click.option("--use-tqdm", '-t', is_flag=True, default=False)
-def cli(config_path: Path, save_path: Path, use_tqdm: bool) -> int:
-    """ Read configuration, run the LArRadioSource simulation, and save to HDF5.  """
+def simulate(config_path: Path, output: Path, use_tqdm: bool) -> int:
+    """ Read configuration, simulate, and save to HDF5.  """
     with open(config_path, 'rb') as f:
         config_dict: dict[str, Any] = load(f)
 
@@ -28,7 +34,7 @@ def cli(config_path: Path, save_path: Path, use_tqdm: bool) -> int:
     num_events: int = simulation_config.get("num_events", 2)
     source_list: list[str] = simulation_config.get("sources", ["source"])
     detector_name: str = simulation_config.get("detector_name", "detector")
-    config_save_path: Path | None = simulation_config.get("save_path", None)
+    config_output: Path | None = simulation_config.get("output", None)
     random_seed: int | None = simulation_config.get("random_seed")
     config_use_tqdm: bool | None = simulation_config.get("use_tqdm", False)
 
@@ -39,18 +45,18 @@ def cli(config_path: Path, save_path: Path, use_tqdm: bool) -> int:
         use_tqdm = config_use_tqdm
 
     # Check that there is a save path to use.
-    if config_save_path is None and save_path is None:
+    if config_output is None and output is None:
         raise ValueError(
-                "No path to save simulation. Add `save_path` to config's `simulation` section or use `--save-path`."
+                "No output path to save simulation. Add `output` to config's `simulation` section or use `--output`/`-o`."
         )
     # Prefer the optional save path. If not set, then use the config save path.
-    if save_path is None:
-        save_path = config_save_path
+    if output is None:
+        output = config_output
 
-    if save_path.suffix != ".hdf5":
+    if output.suffix != ".hdf5":
         print("Missing '.hdf5' in file name. Appending.")
-        save_path = save_path.with_name(f"{save_path.name}.hdf5")
-    print(f"Saving to: {save_path}")
+        output = output.with_name(f"{output.name}.hdf5")
+    print(f"Saving to: {output}")
 
     sources: list[Source] = []
     for source_name in source_list:
