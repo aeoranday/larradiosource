@@ -1,15 +1,17 @@
-# Bismuth 207 Simulation
-This is a simulation package for Bi-207 radioactive decay in liquid argon time projection chambers (LArTPC).
-The target of this simulation is to decay the charge response from the various decays, with a primary focus on the 976 keV and 1048 keV electron emissions through internal conversion.
-The gamma decays are included as they will also produce a charge response.
+# LArTPC Radioactive Source Simulation `larradiosource`
+This is a simulation package for radioactive sources in liquid argon time projection chambers (LArTPC).
+The target of this simulation is to produce the charge response from a radioactive source.
+The initial use-case of this package was for Bi-207 internal conversion decays, but the development into other decay schemes is left open.
 
 ## Detector Geometries Configuration
-The focus of this simulation limits detector geometries to prism-like, such as cylindrical and rectangular TPCs.
+The focus of this simulation limits detector geometries to prism-like TPCs, such as cylinders and rectangular prisms.
 It is expected that the two example geometries will be sufficient for most use cases for 1D channel coverage through radial extension or Cartesian extension.
-The abstract base class of detectors will bring forward whether the emission is contained in the detector and which channels it may be detected on.
-The inheriting classes define the calculations required to evaluate containment and activated channels.
 
 ## Decay Configuration
-This package only focuses on Bi-207 decays in LAr.
-However, these decays are parsed from a configuration file that contain the various decay branches.
-In theory, one could exchange these decay branches with another radioactive isotope, but the test cases aim to compare against data that was collected from Bi-207.
+Decays branches are written according to their emissions and probability.
+Each emission should have a type, e.g. `photon` or `electron`, an energy (MeV), and conversion coefficients in the case of IC.
+Since the configuration is fully user-controlled, it is on the user to know these values and any calculations required to getting these values.
+
+## Simulation Configuration
+There are a few fields that are used by the top-level simulator, such as a save path, number of workers to spawn, number of emissions to create, and the names of the detector and source(s) to be used.
+For scripting purposes, a few of these configurables are also CLI options.
