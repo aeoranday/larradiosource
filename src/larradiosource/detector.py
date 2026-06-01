@@ -39,7 +39,7 @@ class Detector(BaseRNGModel):
     electron_lifetime_ms: float = 3  # ms
     channel_resolution_mev: float = 0.08
     signal_width: int = 12
-    fake_scale: float = 0.8
+    collection_efficiency: float = 0.8
     _Rc: float = 0.6980  # https://lar.bnl.gov/properties/ : R_c (Birks Model)
     _fC_per_MeV: float = 6.79  # fC / MeV
 
@@ -86,7 +86,7 @@ class Detector(BaseRNGModel):
             (float):
                 Resultant charge after transportation.
         """
-        return self._Rc * np.exp(dist / self._attenuation_dist_mm) * energy_mev * self._fC_per_MeV * self.fake_scale
+        return self._Rc * np.exp(dist / self._attenuation_dist_mm) * energy_mev * self._fC_per_MeV * self.collection_efficiency
 
     def process_emission(self, emission: Emission, position: npt.NDArray[float]) -> Event:
         """
