@@ -9,11 +9,12 @@ origin = [0, 0, 0]
 
 [[source.decay_branches]]
 probability = 0.1
-emission.type = "electron"
-emission.energy_mev = 1.2
+emissions = [
+	{type = "electron", energy_mev = 1.2, interaction_dist = 0},
+]
 
 [[source.decay_branches]]
 probability = 0.9
-emission.type = "photon"
-emission.energy_mev = 2.4
-attenuation_dist = 240
+emissions = [
+	{type = "photon", energy_mev = 2.4, interaction_dist = 240},
+]

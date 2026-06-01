@@ -1,4 +1,9 @@
+[simulation]
+num_workers = 1
 num_events = 250_000
+detector_name = "detector_long"
+sources = ["Bi207"]
+random_seed = 42
 
 [detector_long]
 num_channels = 2
@@ -36,80 +41,47 @@ radius = 30
 height = 45
 origin = [0, 0, 0]
 
-[source_A]
+[Bi207]
 decay_rate = 3000
+daughter_shell_to_binding_energy = {K = 0.088, L = 0.01586, M = 0.003851}
 
-[source_A.geometry]
+[anode_Bi207.geometry]
 type = "cylinder"
 radius = 2.5
 height = 0
 origin = [0, 0, 0]
 
-[[source_A.decay_branches]]
-probability = 0.0015
-emission.type = "electron"
-emission.energy_mev = 0.482
+[[Bi207.decay_branches]]
+probability = 0.0690
+emissions = [
+	{type = "photon", energy_mev = 1.770238, interaction_dist = 168, internal_conversion_coefficients = {K = 0.00345, L = 0.00049, M = 0.00013}},
+	{type = "photon", energy_mev = 0.569698, interaction_dist = 97, internal_conversion_coefficients = {K = 0.01539, L = 0.00442, M = 0.00146}}
+]
 
-[[source_A.decay_branches]]
-probability = 0.0044
-emission.type = "electron"
-emission.energy_mev = 0.556
+[[Bi207.decay_branches]]
+probability = 0.00131
+emissions = [
+	{type = "photon", energy_mev = 1.4422, interaction_dist = 150, internal_conversion_coefficients = {K = 0.00243, L = 0.00042, M = 0.00051}},
+	{type = "photon", energy_mev = 0.89779, interaction_dist = 119, internal_conversion_coefficients = {K = 0.01779, L = 0.00498}}
+]
 
-[[source_A.decay_branches]]
-probability = 0.0152
-emission.type = "electron"
-emission.energy_mev = 0.566
+[[Bi207.decay_branches]]
+probability = 0.0000092
+emissions = [
+	{type = "photon", energy_mev = 1.4422, interaction_dist = 150, internal_conversion_coefficients = {K = 0.00243, L = 0.00042, M = 0.00051}},
+	{type = "photon", energy_mev = 0.32810, interaction_dist = 78, internal_conversion_coefficients = {K = 0.25}},
+	{type = "photon", energy_mev = 0.569698, interaction_dist = 97, internal_conversion_coefficients = {K = 0.01539, L = 0.00442, M = 0.00146}}
+]
 
-[[source_A.decay_branches]]
-probability = 0.9789#0.9776
-emission.type = "photon"
-emission.energy_mev = 0.570
-emission.interaction_dist = 80
+[[Bi207.decay_branches]]
+probability = 0.84
+emissions = [
+	{type = "photon", energy_mev = 1.063656, interaction_dist = 129, internal_conversion_coefficients = {K = 0.08431, L = 0.02190, M = 0.00695}},
+	{type = "photon", energy_mev = 0.569698, interaction_dist = 97, internal_conversion_coefficients = {K = 0.01539, L = 0.00442, M = 0.00146}}
+]
 
-[source_B]
-decay_rate = 3000
-
-[source_B.geometry]
-type = "cylinder"
-radius = 2.5
-height = 0
-origin = [0, 0, 0]
-
-[[source_B.decay_branches]]
-probability = 0.0054
-emission.type = "electron"
-emission.energy_mev = 1.060
-
-[[source_B.decay_branches]]
-probability = 0.0184
-emission.type = "electron"
-emission.energy_mev = 1.049
-
-[[source_B.decay_branches]]
-probability = 0.0703
-emission.type = "electron"
-emission.energy_mev = 0.976
-
-[[source_B.decay_branches]]
-probability = 0.7458
-emission.type = "photon"
-emission.energy_mev = 1.064
-emission.interaction_dist = 120
-
-[[source_B.decay_branches]]
-probability = 0.0687
-emission.type = "photon"
-emission.energy_mev = 1.770
-emission.interaction_dist = 160
-
-[[source_B.decay_branches]]
-probability = 0.0002
-emission.type = "electron"
-emission.energy_mev = 1.682
-
-[[source_B.decay_branches]]
-probability = 0.0912
-emission.type = "photon"
-emission.energy_mev = 1.440
-emission.interaction_dist = 140
-
+[[Bi207.decay_branches]]
+probability = 0.089
+emissions = [
+	{type = "photon", energy_mev = 0.569698, interaction_dist = 97, internal_conversion_coefficients = {K = 0.01539, L = 0.00442, M = 0.00146}}
+]
