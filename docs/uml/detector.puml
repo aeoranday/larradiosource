@@ -18,27 +18,26 @@ abstract class Geometry {
  + {abstract} bool is_inside(position: Vector3)
 }
 
-together {
 class Detector {
  + Geometry geometry
  + int num_channels
  + float[1..*] channel_widths
  + float channel_spacing
  + float channel_start_position
- + String channel_direction
+ + String channel_increment_dir
  + float threshold
  + float drift_velocity
  + float electron_lifetime_ms
  + float channel_resolution
  + int signal_width
+ + float collection_efficiency
  + Event process_emission(emission: Emission, position: Vector3)
 }
 
 struct Event {
- + int[1..*] channels
- + float[1..*] amplitudes
- + Emission emission
-}
++ int[1..*] channels
++ float[1..*] amplitudes
++ Emission emission
 }
 
 Vector3 <-[hidden] Detector

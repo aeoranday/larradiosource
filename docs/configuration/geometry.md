@@ -2,7 +2,7 @@
 The `Geometry` class is an abstract base class with current concrete classes `Cylinder` and `RectangularPrism`.
 For the time being, the use of cylinders and rectangular prisms covers many LArTPC designs.
 
-[Geometry UML](docs/uml/geometry.svg "Geometry UML")
+![Geometry UML](../uml/geometry.svg "Geometry UML")
 
 Configuring the concrete classes goes as follows:
 ```toml

@@ -3,7 +3,7 @@ This is a simulation package for radioactive sources in liquid argon time projec
 The target of this simulation is to produce the charge response from a radioactive source.
 The initial use-case of this package was for Bi-207 internal conversion decays, but the development into other decay schemes is left open.
 
-![Class UML Diagram](docs/uml/larradiosource.svg "Class UML Diagram")
+![LArRadioSource UML Diagram](docs/uml/larradiosource.svg "LArRadioSource UML Diagram")
 
 ## Detector Geometries Configuration
 The focus of this simulation limits detector geometries to prism-like TPCs, such as cylinders and rectangular prisms.
@@ -17,3 +17,12 @@ Since the configuration is fully user-controlled, it is on the user to know thes
 ## Simulation Configuration
 There are a few fields that are used by the top-level simulator, such as a save path, number of workers to spawn, number of emissions to create, and the names of the detector and source(s) to be used.
 For scripting purposes, a few of these configurables are also CLI options.
+
+## Examples
+There are various example configurations kept in the `config` directory; the most extensive is the `np04_simulation.toml`, modeled after the [ProtoDUNE 2 Horizontal Drift detector](https://arxiv.org/pdf/1706.07081).
+Running a simulation with the `np04_simulation.toml` config and saving to the current working directory would use the command
+```bash
+larradiosource simulate config/np04_simulation.toml -o test_simulation.hdf5
+```
+
+Details on the configurable parameters are given in [docs/configuration](docs/configuration).
