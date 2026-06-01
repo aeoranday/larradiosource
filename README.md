@@ -3,6 +3,8 @@ This is a simulation package for radioactive sources in liquid argon time projec
 The target of this simulation is to produce the charge response from a radioactive source.
 The initial use-case of this package was for Bi-207 internal conversion decays, but the development into other decay schemes is left open.
 
+![Class UML Diagram](docs/uml/larradiosource.svg "Class UML Diagram")
+
 ## Detector Geometries Configuration
 The focus of this simulation limits detector geometries to prism-like TPCs, such as cylinders and rectangular prisms.
 It is expected that the two example geometries will be sufficient for most use cases for 1D channel coverage through radial extension or Cartesian extension.
