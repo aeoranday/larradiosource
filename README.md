@@ -27,3 +27,19 @@ Running a simulation with the `np04_simulation.toml` config and saving to the cu
 ```bash
 larradiosource simulate config/np04_simulation.toml -o test_simulation.hdf5
 ```
+
+## File Structure
+The simulated contents are written to HDF5 with the specified output (either CLI option or written in configuration file).
+The structure of the HDF5 file contains several groups:
+1. Top level `photon` or `electron` group for the original emission type.
+2. Energy level in MeV as a float (there will be awkward precision keys due to this).
+3. Channel number (if any activity on that channel).
+
+The contents of group 3 will only be channels that overlap with the energy deposition; channels that experience no energy throughout the simulation will not be written to file.
+Similarly, contents of group 2 will only be for energies that occurred randomly, e.g., a low probability emission that happened to never occur in the simulation will not be written to file.
+However, group 1 will always have the `photon` and `electron` split.
+It may be that the contents of either group is empty, but the group will still exist.
+
+For example, an HDF5 path could appear as `/photon/0.569698/100` and the underlying dataset would contain the charge deposits on channel 100 from a 0.569698 MeV photon emission.
+A path with awkward precision may be `/electron/1.0598049999999999/203` for channel 203 from (ideally) a 1.059805 MeV electron emission.
+It is more intuitive to use HDF5's keys to traverse the contents of these files.
