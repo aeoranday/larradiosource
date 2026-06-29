@@ -37,8 +37,8 @@ origin = [973,115,3410]
 [[anode_Bi207.decay_branches]]
 probability = 0.0690
 emissions = [
-	{type = "photon", energy_mev = 1.770238, interaction_dist = 168, internal_conversion_coefficients = {K = 0.00345, L = 0.00049, M = 0.00013}},
-	{type = "photon", energy_mev = 0.569698, interaction_dist = 97, internal_conversion_coefficients = {K = 0.01539, L = 0.00442, M = 0.00146}}
+	{type = "photon", energy_mev = 1.770238, interaction_dist = 167, internal_conversion_coefficients = {K = 0.00345, L = 0.00049, M = 0.00013}},
+	{type = "photon", energy_mev = 0.569698, interaction_dist = 96, internal_conversion_coefficients = {K = 0.01539, L = 0.00442, M = 0.00146}}
 ]
 
 [[anode_Bi207.decay_branches]]
@@ -52,19 +52,19 @@ emissions = [
 probability = 0.0000092
 emissions = [
 	{type = "photon", energy_mev = 1.4422, interaction_dist = 150, internal_conversion_coefficients = {K = 0.00243, L = 0.00042, M = 0.00051}},
-	{type = "photon", energy_mev = 0.32810, interaction_dist = 78, internal_conversion_coefficients = {K = 0.25}},
+	{type = "photon", energy_mev = 0.32810, interaction_dist = 75, internal_conversion_coefficients = {K = 0.25}},
 	{type = "photon", energy_mev = 0.569698, interaction_dist = 97, internal_conversion_coefficients = {K = 0.01539, L = 0.00442, M = 0.00146}}
 ]
 
 [[anode_Bi207.decay_branches]]
 probability = 0.84
 emissions = [
-	{type = "photon", energy_mev = 1.063656, interaction_dist = 129, internal_conversion_coefficients = {K = 0.08431, L = 0.02190, M = 0.00695}},
-	{type = "photon", energy_mev = 0.569698, interaction_dist = 97, internal_conversion_coefficients = {K = 0.01539, L = 0.00442, M = 0.00146}}
+	{type = "photon", energy_mev = 1.063656, interaction_dist = 129, internal_conversion_coefficients = {K = 0.08434, L = 0.02190, M = 0.00692}},
+	{type = "photon", energy_mev = 0.569698, interaction_dist = 96, internal_conversion_coefficients = {K = 0.01539, L = 0.00442, M = 0.00146}}
 ]
 
 [[anode_Bi207.decay_branches]]
 probability = 0.089
 emissions = [
-	{type = "photon", energy_mev = 0.569698, interaction_dist = 97, internal_conversion_coefficients = {K = 0.01539, L = 0.00442, M = 0.00146}}
+	{type = "photon", energy_mev = 0.569698, interaction_dist = 96, internal_conversion_coefficients = {K = 0.01539, L = 0.00442, M = 0.00146}}
 ]
